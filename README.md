@@ -103,17 +103,67 @@ def dynamic_astar(maze, start, goal):
 
     return None  # No path found
 
-# Example usage
-maze = DynamicMaze(20, 20)
-maze.initialize_maze()
-start = (0, 0)
-goal = (19, 19)
+def adaptive_multi_point_dynamic_astar(width, height, wall_change_prob, teleport_prob, starts, goals):
+    maze = DynamicMaze(width, height, wall_change_prob, teleport_prob)
+    maze.initialize_maze()
+    
+    # Adjust starts and goals to be within maze boundaries
+    starts = [(min(x, width-1), min(y, height-1)) for x, y in starts]
+    goals = [(min(x, width-1), min(y, height-1)) for x, y in goals]
+    
+    best_path = None
+    best_length = float('inf')
 
-path = dynamic_astar(maze, start, goal)
-if path:
-    print("Path found:", path)
-else:
-    print("No path found")
+    for start in starts:
+        for goal in goals:
+            path = dynamic_astar(maze, start, goal)
+            if path and len(path) < best_length:
+                best_path = path
+                best_length = len(path)
+
+    return best_path, maze
+
+# Example usage
+def run_simulation(width, height, wall_change_prob, teleport_prob, starts, goals):
+    # Adjust starts and goals to be within maze boundaries
+    starts = [(min(x, width-1), min(y, height-1)) for x, y in starts]
+    goals = [(min(x, width-1), min(y, height-1)) for x, y in goals]
+    
+    path, maze = adaptive_multi_point_dynamic_astar(width, height, wall_change_prob, teleport_prob, starts, goals)
+    if path:
+        print(f"Path found for maze {width}x{height}, wall_change_prob={wall_change_prob}, teleport_prob={teleport_prob}")
+        print(f"Path length: {len(path)}")
+        print(f"Path: {path}")
+    else:
+        print(f"No path found for maze {width}x{height}, wall_change_prob={wall_change_prob}, teleport_prob={teleport_prob}")
+    print("Teleport points:", maze.teleport_points)
+    print("\n")
+
+# Run simulations with different parameters
+starts = [(0, 0), (0, 19), (19, 0)]
+goals = [(19, 19), (10, 10), (15, 15)]
+
+run_simulation(20, 20, 0.1, 0.05, starts, goals)
+run_simulation(30, 30, 0.2, 0.1, starts, goals)
+run_simulation(15, 15, 0.05, 0.02, starts, goals)
+
+# Example of changing parameters dynamically
+print("Changing parameters dynamically:")
+width, height = 25, 25
+wall_change_prob, teleport_prob = 0.15, 0.07
+run_simulation(width, height, wall_change_prob, teleport_prob, starts, goals)
+
+# Increase maze size
+width, height = 35, 35
+run_simulation(width, height, wall_change_prob, teleport_prob, starts, goals)
+
+# Increase wall change probability
+wall_change_prob = 0.25
+run_simulation(width, height, wall_change_prob, teleport_prob, starts, goals)
+
+# Increase teleport probability
+teleport_prob = 0.12
+run_simulation(width, height, wall_change_prob, teleport_prob, starts, goals)
 ```
 
 This implementation creates a novel algorithm for pathfinding in a dynamic maze with teleportation points. Here's what makes it unique:
