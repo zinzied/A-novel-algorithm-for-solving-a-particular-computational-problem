@@ -11,7 +11,6 @@ This problem combines elements of pathfinding, dynamic environments, and randomn
 
 Let's implement a solution using a modified A* algorithm that accounts for these dynamic elements:
 
-**File: /path/to/your/project/dynamic_maze_solver.py**
 
 ```python
 import heapq
